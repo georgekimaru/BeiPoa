@@ -9,3 +9,8 @@ class UserloginConfig(AppConfig):
     def ready(self):
         from .import views
         views.start()
+    
+    
+    
+    #Comments added
+    
