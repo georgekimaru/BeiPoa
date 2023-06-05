@@ -28,7 +28,9 @@ SECRET_KEY = "django-insecure-vh#rvd7v_(ve6ww9e5s85+lgd5i%6i@e$*t)cag8c+)&ihucvv
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['pricepiker.herokuapp.com','localhost']
+# ALLOWED_HOSTS = ['pricepiker.herokuapp.com','localhost']
+ALLOWED_HOSTS = ['*']
+
 
 CSRF_TRUSTED_ORIGINS = [
     'https://pricepiker.herokuapp.com/'
