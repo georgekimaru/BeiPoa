@@ -135,7 +135,7 @@ def search(request):
         if 'amazon' in webList:
             # AmazonList=[]
             AmazonList=getInfoFormAmazon(q) # Scrapping
-            # AmazonList=getInfoAmazon(q) #PAPI
+            # AmazonList=getInfoAmazon(q) 
             AllWebProductList.append(AmazonList)
         if 'shopclues' in webList:
             shopcluesList=getInfoFromShopClues(q)

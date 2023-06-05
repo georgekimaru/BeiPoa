@@ -8,7 +8,7 @@
     font-family:'Times New Roman', Times, serif;
 }
 body{
-    background-color: #e19f79;
+    background-color: #282421;
 } 
 .logo{
    font-weight:bolder;
@@ -25,7 +25,7 @@ nav ul li a{
     text-transform: uppercase;
 }
 a.active,a.hover{
-    background: #e19f79;
+    background: #2237c2;
     transition: .5s;
 }
 
@@ -37,7 +37,7 @@ a.active,a.hover{
 
 
 .navbar{
-    background-color: #e96518 !important;
+    background-color: #282421 !important;
     border-bottom: 1px solid #ffffff30;
 }
 .navbar-light .navbar-brand,
@@ -46,7 +46,7 @@ a.active,a.hover{
     transition: all ease 0.5s;
 }
 .navbar-light .navbar-nav .nav-link:focus, .navbar-light .navbar-nav .nav-link:hover{
-    color:red;
+    color:rgb(45, 28, 199);
     border-bottom: 1px solid #ffffff80;
     
 }
@@ -102,7 +102,7 @@ a.active,a.hover{
 }
 .content a:hover{
     background-color: #fff;
-    color:#e96518;
+    color:#2020ec;
 
 }
 .content-text{
@@ -116,7 +116,7 @@ a.active,a.hover{
 .line{
     margin: auto;
     width: 30%;
-    border: 2px solid red;
+    border: 2px solid rgb(23, 40, 193);
     
 }
 
@@ -149,7 +149,7 @@ a.active,a.hover{
 }
 
 .features h1{
-    color:#e96518 ;
+    color:#282421 ;
 }
 
 .custom-shape-divider-top-1632594761 {
@@ -196,7 +196,8 @@ a.active,a.hover{
    
 }
 .footer{
-    background-color: #e96518;
+    background-color: #282421;
+    flex-shrink:0;
 }
 
 ul li a{
