@@ -8,7 +8,7 @@
     font-family:'Times New Roman', Times, serif;
 }
 body{
-    background-color: #2b2bb0;
+    background-color: #e96518;
 } 
 .logo{
    font-weight:bolder;
@@ -25,7 +25,7 @@ nav ul li a{
     text-transform: uppercase;
 }
 a.active,a.hover{
-    background: #1b9bff;
+    background: #ea8060;
     transition: .5s;
 }
 
@@ -37,7 +37,7 @@ a.active,a.hover{
 
 
 .navbar{
-    background-color: #2b2bb0 !important;
+    background-color: #e96518 !important;
     border-bottom: 1px solid #ffffff30;
 }
 .navbar-light .navbar-brand,
@@ -102,7 +102,7 @@ a.active,a.hover{
 }
 .content a:hover{
     background-color: #fff;
-    color:#2b2bb0;
+    color:#e96518;
 
 }
 .content-text{
@@ -149,7 +149,7 @@ a.active,a.hover{
 }
 
 .features h1{
-    color:#2b2bb0 ;
+    color:#e96518 ;
 }
 
 .custom-shape-divider-top-1632594761 {
@@ -196,7 +196,7 @@ a.active,a.hover{
    
 }
 .footer{
-    background-color: #2b2bb0;
+    background-color: #e96518;
 }
 
 ul li a{
