@@ -11,6 +11,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate,logout,login
 from operator import attrgetter
 from amazon_paapi import AmazonApi
+#from .helpers import getInfoFromFlipKart, getInfoFromAmazon, getInfoFromShopClues, getInfoFromSnapDeal, getInfoFromAjio, getInfoFromMyntra
 
 # Create your views here.
 def index(request):
@@ -22,23 +23,32 @@ def index(request):
 def contact(request):
     contactPage=["Feel free to contact us","Send a message","Leave your message here..."]
     if request.method=="POST":
-        firstName=request.POST.get('firstName')
-        lastName=request.POST.get('lastName')
-        email=request.POST.get('email')
-        phone=request.POST.get('phone')
-        message=request.POST.get('message')
+        # Extract form data using get() with default values 
+        # Using default values in request.POST.get() to avoid potential None values in case the form fields are missing in the request.
+        firstName=request.POST.get('firstName', '')
+        lastName=request.POST.get('lastName', '')
+        email=request.POST.get('email', '')
+        phone=request.POST.get('phone', '')
+        message=request.POST.get('message', '')
+        
+        # Create and save Contact model instance
         contact=Contact(firstName=firstName,lastName=lastName,email=email,phone=phone,message=message)
         contact.save()
+        
         messages.success(request, "Thank You ! 🙂")
+        
     return render(request,'home/contactInfo.html',{'info':contactPage})
-    
     #return HttpResponse("this is contact page")
+
 def feedback(request):
     feedbackPage=["Your Feedback","We would like your feedback to improve our website.","Leave your valuable feedback here..."]
     if request.method=="POST":
+        # Extract form data using get() with default values
         name=request.POST.get('name')
         email=request.POST.get('email')
         message=request.POST.get('message')
+        
+        # Create and save Feedback model instance
         feedback=Feedback(name=name,email=email,message=message)
         feedback.save()
         messages.success(request, " Thank You ! We admire Your Valuable feedback !")
@@ -57,18 +67,23 @@ def signup(request):
         email=request.POST['email']
         pass1=request.POST['pass1']
         pass2=request.POST['pass2']
+        
+        # Check if username contains only letters and numbers
         if not username.isalnum():
-            messages.error(request,"User name conatins only letters and numbers!")
+            messages.error(request,"User name contains only letters and numbers!")
             return redirect('signin')
             
-            
+        # Check if username length is within a valid range    
         if len(username)>10:
             messages.error(request,"user name too long !")
             return redirect('register')
+        
+        # Check if passwords match
         if pass1!=pass2:
             messages.error(request,"Password are not matching 😰 !")
             return render(request,'home/signIn.html')
             
+        # Create a new user and save it
         myuser = User.objects.create_user(username,email,pass1)
         myuser.first_name=fname
         myuser.last_name=lname
@@ -83,25 +98,33 @@ def userlogin(request):
         loginusername=request.POST['loginusername']
         loginpassword=request.POST['loginpassword']
         
+        # Authenticate user credentials
         user = authenticate(request,username = loginusername,password = loginpassword)
         
         if user is not None:
+             # Log in the user and display success message
             login(request, user)
             messages.success(request,"Successfully logged In 🙃")
             return render(request,'userLogin/userDashboard.html',{'userName':request.user})
         else:
+            # Display error message for invalid credentials
             messages.error(request,"Invalid Credentials 😔 , please try Again !")
             return render(request,"home/signIn.html")
 
 def userlogout(request):
+    # Display a success message to the user
     messages.success(request,"Logged Out !")
+    # Perform user logout
     logout(request)
+    # Redirect the user to the home page
     return redirect('home')
 
 def userDashboard(request):
+    # Render the user dashboard template
     return render(request, "userDashboard.html")
 
-def login1(request):                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+def login1(request):
+    # Render the login page
     # messages.success(request,"Login Portal")
     return render(request,'home/signIn.html')
     #return HttpResponse("This is login section")
@@ -113,48 +136,57 @@ def subscribe(ls):
 
 def search(request):
     if request.method == "POST":
-        webList=request.POST.getlist('websites')
-        q=request.POST.get('search')
-        view=request.POST.get('view')
-        if(q=="" or len(webList)==0):
+        webList = request.POST.getlist('websites')
+        q = request.POST.get('search')
+        view = request.POST.get('view')
+        
+        if(q == "" or len(webList) == 0):
             if request.user.is_authenticated:
                 return render(request,'userLogin/userDashboard.html',{'error':True,'search':q,'weblist':webList,'userName':request.user})
             else:
                 return render(request,'home/searchProduct.html',{'error':True,'search':q,'weblist':webList})
+            
         AllWebProductList=[]
+        jumiaList=[]
         FlipkartList=[]
         AmazonList=[]
         shopcluesList=[]
         snapdealList=[]
         MyntraList=[]
+        
+        if 'jumia' in webList:
+            jumiaList=getInfoFromJumia(q)
+            
         if 'flipkart' in webList:
-            FlipkartList=[]
             FlipkartList=getInfoFromFlipkart(q)
             AllWebProductList.append(FlipkartList)
             #return render(request,'home/searchProduct.html',{'lists':productObj})
+            
         if 'amazon' in webList:
-            # AmazonList=[]
             AmazonList=getInfoFormAmazon(q) # Scrapping
-            # AmazonList=getInfoAmazon(q) 
             AllWebProductList.append(AmazonList)
+            
         if 'shopclues' in webList:
             shopcluesList=getInfoFromShopClues(q)
             AllWebProductList.append(shopcluesList)
+            
         if 'snapdeal' in webList:
             snapdealList=getInfoFromSnapDeal(q)
             print ("welcome in snapdeal")
+            
         if 'ajio' in webList:
             ajioList=getInfoFromAjio(q)
+            
         if 'myntra' in webList:
             MyntraList=getInfoFromMyntra(q)
             AllWebProductList.append(MyntraList)
             print(" welcome in myntra")
+            
         #sorting(AllWebProductList)
-        mergeList=FlipkartList+AmazonList+shopcluesList
+        mergeList=FlipkartList+AmazonList+shopcluesList+snapdealList+MyntraList+jumiaList
         # sorting(mergeList,asc)
         # print(request.user.is_authenticated)
         if request.user.is_authenticated :
-
             return render(request,'userLogin/userDashboard.html',{'lists':mergeList,'val':view,'search':q,'weblist':webList,'userName':request.user})
         else:
             return render(request,'home/searchProduct.html',{'lists':mergeList,'val':view,'search':q,'weblist':webList})
@@ -163,12 +195,13 @@ def search(request):
 
 
 def result(request):
+    # Return a simple HTTP response
     return HttpResponse("kjghil")
 
 
 
 def sorting(PList,asc):
-
+    # Sort the list of objects based on the 'price' attribute
     PList.sort(key=attrgetter('price'),reverse=asc)
 
 '''
@@ -185,18 +218,19 @@ fomr(action=/subscribe)
 #BY PAPI AMAZON
 def getInfoAmazon(product):
     try:
-        amazon = AmazonApi('','','','IN')
+        amazon = AmazonApi('','','','IN') # Replace with your access keys
         search_result = amazon.search_items(keywords=product)
-        # AmaProductList=[]
+        AmazonList=[]
         # print(search_result.items)
+        
         for item in search_result.items:
-            obj=ProductDetails()
-            obj.link=item.detail_page_url
-            obj.img=item.images.primary.medium.url
+            obj = ProductDetails()
+            obj.link = item.detail_page_url
+            obj.img = item.images.primary.medium.url
             # print(item.item_info.by_line_info.brand)
             # print(item.item_info.features)
-            obj.desc=item.item_info.title.display_value
-            obj.price=item.offers.listings[0].price.amount
+            obj.desc = item.item_info.title.display_value
+            obj.price = item.offers.listings[0].price.amount
             AmazonList.append(obj)
     except:
         pass
