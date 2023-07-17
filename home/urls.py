@@ -17,6 +17,6 @@ urlpatterns = [
     path('userlogout',views.userlogout,name="userlogout"),
 
 ]
-admin.site.site_header = "PriceGrabber Admin"
+admin.site.site_header = "BeiPoa Admin"
 admin.site.site_title = "Purchase here"
-admin.site.index_title = "Welcome to PriceGrabber Portal😊"
+admin.site.index_title = "Welcome to BeiPoa Portal😊"

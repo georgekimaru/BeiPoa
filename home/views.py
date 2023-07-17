@@ -1,6 +1,6 @@
 from django.http.request import HttpHeaders
 from django.shortcuts import redirect, render,HttpResponse,redirect
-from .models import ProductDetails
+from .models import ProductDetails, ProductDetailsJiji
 from bs4 import BeautifulSoup
 import requests
 from django.contrib import  messages
@@ -148,6 +148,8 @@ def search(request):
             
         AllWebProductList=[]
         jumiaList=[]
+        avechiList=[]
+        jijiList=[]
         FlipkartList=[]
         AmazonList=[]
         shopcluesList=[]
@@ -156,6 +158,15 @@ def search(request):
         
         if 'jumia' in webList:
             jumiaList=getInfoFromJumia(q)
+            AllWebProductList.append(jumiaList)
+
+        if 'jiji' in webList:
+            jijiList=getInfoFromJiji(q)
+            AllWebProductList.append(jijiList)
+
+        if 'avechi' in webList:
+            avechiList=getInfoFromavechi(q)
+            AllWebProductList.append(avechiList)
             
         if 'flipkart' in webList:
             FlipkartList=getInfoFromFlipkart(q)
@@ -257,7 +268,7 @@ def extract_url(url):
 # By SCRAPPING from AMAZON
 def getInfoFormAmazon(productName):
     headers = {
-        "Host": "www.amazon.in",
+        "Host": "www.amazon.com",
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.54 Safari/537.36",
         "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
         "Accept-Language": "en-US,en;q=0.5",
@@ -265,7 +276,7 @@ def getInfoFormAmazon(productName):
         "Connection": "keep-alive",
         }
     try:
-        url="https://www.amazon.in/s?k="
+        url="https://www.amazon.com/s?k="
         productName=productName.replace(" ", "+")
         #print(url+q+'&ref=nb_sb_noss_1')
         resp = requests.get(url +productName+'&ref=nb_sb_noss_1',headers=headers)
@@ -428,8 +439,6 @@ def getInfoFromFlipkart(productName):
         pass
     return FlipkartList
     
-
-
 # By Scrapping from Shopclues
 def getInfoFromShopClues(productName):
     try:
@@ -456,9 +465,101 @@ def getInfoFromShopClues(productName):
                 #print(temp1.find('span',attrs={'class':'p_price'}))
                 #obj.originalPrice=item.find('span')
                 shopcluesList.append(obj)
+                #print(shopcluesList)
     except:
         pass
     return shopcluesList
+
+
+
+# SCRAPING FROM JUMIA
+def getInfoFromJumia(productName):
+    try:
+        url = "https://www.jumia.co.ke/catalog/?q="
+        jumiaList = []
+        #print(url+productName)
+        resp = requests.get(url + productName)
+        jumiaSoup = BeautifulSoup(resp.text, 'html.parser')
+        items = jumiaSoup.find_all('article', attrs={'class','prd _fb col c-prd'})
+        #print(len(items))
+        if len(items) > 0:
+            for item in items:
+                obj = ProductDetails()
+                obj.website = "jumia"
+                obj.desc = item.find('h3').text
+                obj.price = item.find('div', class_='prc').text
+                #print(obj.price)
+                obj.discount = item.find('div', class_='old').text
+                #print(obj.discount)
+                obj.link = item.find('a').get('href')
+                #print(obj.link)
+                obj.img=item.find('div',attrs={'class':'img-c'}).img.get('src')
+                #print(obj.img)
+                jumiaList.append(obj)
+    except:
+        pass
+    return jumiaList
+
+# SCRAPING FROM JIJI
+def getInfoFromJiji(productName):
+    try:
+        url = "https://jiji.co.ke/search?query="
+        jijiList = []
+        #print(url+productName)
+        resp = requests.get(url + productName)
+        jijiSoup = BeautifulSoup(resp.text, 'html.parser')
+        items = jijiSoup.find_all('div', attrs={'class','b-list-advert__item-wrapper b-list-advert__item-wrapper--base'})
+        #print(len(items))
+        if len(items) > 0:
+            for item in items:
+                obj = ProductDetails()
+                obj.website = "jiji"
+                obj.desc = item.find('div', class_='b-advert-title-inner qa-advert-title b-advert-title-inner--div').text
+                obj.price = item.find('div', class_='qa-advert-price').text
+                #print(obj.price)
+                obj.discount = item.find('div', class_='qa-advert-price').text
+                #print(obj.discount)
+                obj.link = item.find('a').get('href')
+                #print(obj.link)
+                obj.img="jiji.co.ke"
+                #print(obj.img)
+                jijiList.append(obj)
+                #print(jijiList)
+    except:
+        pass
+    return jijiList
+   
+
+# SCRAPING FROM avechi
+def getInfoFromavechi(productName):
+    try:
+        url = "https://avechi.co.ke/?s="
+        avechiList = []
+        #print(url+productName)
+        resp = requests.get(url + productName)
+        avechiSoup = BeautifulSoup(resp.text, 'html.parser')
+        items = avechiSoup.find_all('article', attrs={'class','col_item offer_grid rehub-sec-smooth offer_grid_com mobile_compact_grid no_btn_enabled offer_act_enabled'})
+        #print(len(items))
+        if len(items) > 0:
+            for item in items:
+                obj = ProductDetails()
+                obj.website = "avechi"
+                obj.desc = item.find('h3').text
+                #print(obj.desc)
+                obj.price = item.find('div', class_='prc').text
+                #print(obj.price)
+        #        obj.discount = item.find('div', class_='old').text
+                #print(obj.discount)
+                obj.link = item.find('a').get('href')
+                #print(obj.link)
+        #        obj.img=item.find('div',attrs={'class':'img-c'}).img.get('src')
+                #print(obj.img)
+
+                avechiList.append(obj)
+
+    except:
+        pass
+    return avechiList
 
 
 # By Scrapping from SNAPDEAL

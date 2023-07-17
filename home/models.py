@@ -31,3 +31,13 @@ class ProductDetails:
     discount:str
     id:str
 
+class ProductDetailsJiji:
+    desc : str
+    img : str
+    price : int
+    link:str
+    brand:str
+    website:str
+    originalPrice:str
+    discount:str
+    id:str
